@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Query Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#a52a2a',
+                        secondary: '#5f6368'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <div class="text-center mb-8">
+            <span class="font-['Pacifico'] text-4xl text-primary">Query Portal</span>
+            <p class="text-gray-600 mt-2">Create Your Account</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-6 fade-in">
+            <form id="signupForm" class="space-y-6">
+                <div>
+                    <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" name="email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" required minlength="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
+                    <p class="text-xs text-gray-500 mt-1">Password must be at least 6 characters long</p>
+                </div>
+
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
+                </div>
+
+                <div class="flex items-center">
+                    <input id="terms" name="terms" type="checkbox" required class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                    <label for="terms" class="ml-2 block text-sm text-gray-700">
+                        I agree to the <a href="#" class="text-primary hover:text-red-800">Terms of Service</a> and <a href="#" class="text-primary hover:text-red-800">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <div>
+                    <button type="submit" id="submitBtn" class="w-full btn-primary text-white font-medium py-2 px-4 rounded-button bg-primary hover:bg-red-800">
+                        Create Account
+                    </button>
+                </div>
+
+                <div id="signupError" class="text-red-600 text-sm hidden"></div>
+
+                <div class="text-center text-sm text-gray-600 mt-4">
+                    Already have an account? 
+                    <a href="login.html" class="text-primary hover:text-red-800">Sign in here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfrHzrvoiyddmNtn6XR1gc3sM3OjI7QKM",
+            authDomain: "issuetracker-c1daa.firebaseapp.com",
+            projectId: "issuetracker-c1daa",
+            storageBucket: "issuetracker-c1daa.appspot.com",
+            messagingSenderId: "578054110155",
+            appId: "1:578054110155:web:3dcf5a838a801803c3944e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const signupForm = document.getElementById('signupForm');
+            const errorElement = document.getElementById('signupError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Disable button to prevent multiple submissions
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Creating Account...';
+                
+                // Clear previous errors
+                errorElement.textContent = '';
+                errorElement.classList.add('hidden');
+
+                // Get form values
+                const fullName = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const termsChecked = document.getElementById('terms').checked;
+
+                // Validation
+                if (!fullName || !email || !password) {
+                    errorElement.textContent = 'Please fill in all required fields.';
+                    errorElement.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Create Account';
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    errorElement.textContent = 'Passwords do not match.';
+                    errorElement.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Create Account';
+                    return;
+                }
+
+                if (!termsChecked) {
+                    errorElement.textContent = 'Please accept the Terms of Service.';
+                    errorElement.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Create Account';
+                    return;
+                }
+
+                try {
+                    // 1. Create user in Firebase Authentication
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // 2. Create user profile in Firestore
+                    const userData = {
+                        fullName,
+                        email,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    };
+                    
+                    await setDoc(doc(db, 'users', user.uid), userData);
+
+                    // 3. Redirect to login page
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('Error during signup:', error);
+                    
+                    let errorMessage = 'An error occurred during registration. Please try again.';
+                    
+                    switch(error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMessage = 'This email is already registered. Please sign in instead.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = 'Invalid email address format.';
+                            break;
+                        case 'auth/weak-password':
+                            errorMessage = 'Password is too weak. Please use a stronger password.';
+                            break;
+                        case 'auth/operation-not-allowed':
+                            errorMessage = 'Email/password accounts are not enabled.';
+                            break;
+                    }
+                    
+                    errorElement.textContent = errorMessage;
+                    errorElement.classList.remove('hidden');
+                    
+                    // Re-enable button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Create Account';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
