@@ -1,7 +1,3 @@
-Here’s an enhanced and polished version of your `README.md` file for the **Tracker Dashboard** project, suitable for professional use on GitHub. It includes improved formatting, clearer descriptions, additional setup guidance, and SEO-friendly structure:
-
----
-
 # 🎯 Tracker Dashboard
 
 A sleek and modern **admin dashboard** for ticket tracking and management, developed using **HTML**, **Tailwind CSS**, and **JavaScript**. Designed for usability and responsiveness, this static dashboard provides a strong foundation for building scalable ticket management systems.
