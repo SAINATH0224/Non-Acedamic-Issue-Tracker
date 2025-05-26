@@ -39,7 +39,3 @@ To view the dashboard, simply open the `index.html` file in a web browser. No se
 ## Screenshots
 
 ![Dashboard Overview](https://screenshot-url-placeholder.png)
-
-## License
-
-MIT 
