@@ -62,17 +62,11 @@ No external dependencies or runtime installations required.
 
 ---
 
-## 🔮 Live Preview
-
-> Coming soon: [Demo on GitHub Pages](#)
-
----
-
 ## 📸 Screenshots
 
-> Replace this with real screenshots or animated previews:
-
-![Dashboard Overview](https://screenshot-url-placeholder.png)
+![Screenshot (161)](https://github.com/user-attachments/assets/9611968c-1d8e-40ca-85f7-5a704581a798)
+g)
+![Screenshot (163)](https://github.com/user-attachments/assets/49fda3ce-68ee-44e5-b806-595ffe451d2a)
 
 ---
 
@@ -89,28 +83,3 @@ These are proposed upgrades for future development:
 
 ---
 
-## 🤝 Contributing
-
-Interested in contributing? You’re welcome to fork the repo, suggest features, report bugs, or submit pull requests!
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-## 👨‍💻 Author
-
-Made with 💡 by [Your Name](https://github.com/yourusername)
-
----
-
-Would you like me to help you:
-
-* Add example screenshots?
-* Generate a dark mode version?
-* Prepare a `LICENSE` file?
-
-Let me know!
